@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -ex
+
+# seed data
+export CTS_RESOLVER=api
+mkdir -p /var/lib/nautilus/data
+python manage.py load_text_repos
+
+export CTS_RESOLVER=local
+python manage.py $@

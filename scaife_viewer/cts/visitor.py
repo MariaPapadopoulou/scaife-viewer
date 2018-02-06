@@ -17,7 +17,7 @@ class Visitor:
         self.limit = limit
         self.dry_run = dry_run
 
-    def walk(self):
+    def run(self):
         cts.TextInventory.load()
         print("Text inventory loaded")
         if self.urn_prefix:
@@ -33,8 +33,8 @@ class Visitor:
             if self.limit is not None:
                 passages = islice(passages, self.limit)
             passages = list(passages)
-            print(f"Walking {len(passages)} passages")
-            consume(executor.map(self.walker, chunker(passages, self.chunk_size), chunksize=10))
+            print(f"Handling {len(passages)} passages")
+            consume(executor.map(self.runner, chunker(passages, self.chunk_size), chunksize=10))
 
     def texts(self):
         ti = cts.text_inventory()
@@ -60,7 +60,7 @@ class Visitor:
                 })
         return passages
 
-    def walker(self, chunk: Iterable[str]):
+    def runner(self, chunk: Iterable[str]):
         for p in chunk:
             urn = p["urn"]
             try:

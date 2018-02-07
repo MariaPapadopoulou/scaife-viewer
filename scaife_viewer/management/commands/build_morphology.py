@@ -29,7 +29,7 @@ class Command(CorpusWalker):
         http = AuthorizedSession(credentials)
         zone = query_metadata("instance/zone").split("/")[-1]
         instance = query_metadata("instance/name")
-        base_url = f"https://compute.googleapis.com/compute/v1/projects/{project}/zones/{zone}/"
+        base_url = f"https://www.googleapis.com/compute/v1/projects/{project}/zones/{zone}/"
         r = http.get(f"{base_url}instances/{instance}")
         r.raise_for_status()
         metadata = r.json()["metadata"]

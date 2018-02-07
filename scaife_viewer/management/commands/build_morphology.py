@@ -51,6 +51,7 @@ class Command(CorpusWalker):
         r = http.post(
             f"{base_url}instances/{instance}/setMetadata",
             data=json.dumps(body),
+            headers={"Content-Type": "application/json"},
         )
         r.raise_for_status()
 

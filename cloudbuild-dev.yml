@@ -9,13 +9,13 @@ steps:
   - --cache-from
   - gcr.io/$PROJECT_ID/scaife-viewer:$BRANCH_NAME
   - --tag
-  - gcr.io/$PROJECT_ID/scaife-viewer:$COMMIT_SHA
+  - gcr.io/$PROJECT_ID/scaife-viewer:$BRANCH_NAME
   - "."
 - name: gcr.io/cloud-builders/docker
   args:
   - tag
-  - gcr.io/$PROJECT_ID/scaife-viewer:$COMMIT_SHA
   - gcr.io/$PROJECT_ID/scaife-viewer:$BRANCH_NAME
+  - gcr.io/$PROJECT_ID/scaife-viewer:$COMMIT_SHA
 images:
 - gcr.io/$PROJECT_ID/scaife-viewer:$COMMIT_SHA
 - gcr.io/$PROJECT_ID/scaife-viewer:$BRANCH_NAME

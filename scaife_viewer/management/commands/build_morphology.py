@@ -34,19 +34,17 @@ class Command(CorpusWalker):
         r.raise_for_status()
         metadata = r.json()["metadata"]
         body = {
-            "metadata": {
-                "fingerprint": metadata["fingerprint"],
-                "items": [
-                    dict(key=key, value=value)
-                    for key, value in {
-                        **{
-                            item["key"]: item["value"]
-                            for item in metadata["items"]
-                        },
-                        "status": status,
-                    }.items()
-                ],
-            },
+            "fingerprint": metadata["fingerprint"],
+            "items": [
+                dict(key=key, value=value)
+                for key, value in {
+                    **{
+                        item["key"]: item["value"]
+                        for item in metadata["items"]
+                    },
+                    "status": status,
+                }.items()
+            ],
         }
         r = http.post(
             f"{base_url}instances/{instance}/setMetadata",

@@ -36,12 +36,9 @@ class CloudJob:
             self.update_metadata(status="failed")
         else:
             self.save_artifacts()
-            artifacts = {}
-            for key, artifact in self.artifacts.items():
-                artifacts[key] = artifact["url"]
             self.update_metadata(
                 status="done",
-                artifacts=json.dumps(artifacts),
+                artifacts=json.dumps(self.artifacts),
             )
 
     def update_metadata(self, status, artifacts="{}"):
@@ -72,21 +69,22 @@ class CloudJob:
 
     def load_artifacts(self):
         try:
-            artifacts = query_metadata("instance/attributes/artifacts")
+            provided_artifacts = query_metadata("instance/attributes/artifacts")
         except KeyError:
-            artifacts = {}
-        loaded = {}
-        for key, artifact in artifacts.items():
+            provided_artifacts = {}
+        artifacts = {}
+        for key, artifact in provided_artifacts.items():
             data = io.BytesIO()
             if "url" in artifact:
                 self.read_external_artifact(artifact["url"], data)
             elif "data" in artifact:
                 data.write(artifact["data"])
             data.seek(0)
-            loaded[key] = {
+            artifacts[key] = {
                 "save": False,
                 "data": data,
             }
+        self.artifacts = artifacts
 
     def read_external_artifact(self, url, buf):
         if url.startswith("gs://"):
@@ -120,8 +118,7 @@ class CloudJob:
                 object_name=object_name,
             )
             r.upload(artifact["data"])
-            artifacts["key"] = {
-                **artifact,
+            artifacts[key] = {
                 "url": f"gs://{self.artifact_bucket}/{object_name}",
             }
         self.artifacts = artifacts

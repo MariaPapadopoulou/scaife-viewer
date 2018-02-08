@@ -34,7 +34,8 @@ class Visitor:
                 passages = islice(passages, self.limit)
             passages = list(passages)
             print(f"Handling {len(passages)} passages")
-            consume(executor.map(self.runner, chunker(passages, self.chunk_size), chunksize=10))
+            results = executor.map(self.runner, chunker(passages, self.chunk_size), chunksize=10)
+            self.process_results(results)
 
     def texts(self):
         ti = cts.text_inventory()
@@ -61,6 +62,7 @@ class Visitor:
         return passages
 
     def runner(self, chunk: Iterable[str]):
+        results = []
         for p in chunk:
             urn = p["urn"]
             try:
@@ -71,7 +73,12 @@ class Visitor:
             except Exception as e:
                 print(f"Error {e}")
                 continue
-            self.visit(passage, p["sort_idx"])
+            results.append(self.visit(passage, p["sort_idx"]))
+        return results
+
+    def process_results(self, results):
+        # eat the results for breakfast
+        consume(results)
 
     def __getstate__(self):
         state = self.__dict__.copy()

@@ -28,14 +28,14 @@ class CloudJob:
         super().__init__(*args, **kwargs)
 
     def handle(self, *args, **kwargs):
-        self.load_artifacts()
         self.update_metadata(status="started")
         try:
+            self.load_artifacts()
             super().handle(*args, **kwargs)
+            self.save_artifacts()
         except Exception:
             self.update_metadata(status="failed")
         else:
-            self.save_artifacts()
             self.update_metadata(
                 status="done",
                 artifacts=json.dumps(self.artifacts),

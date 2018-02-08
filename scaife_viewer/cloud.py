@@ -41,23 +41,25 @@ class CloudJob:
                 artifacts=json.dumps(self.artifacts),
             )
 
-    def update_metadata(self, status, artifacts="{}"):
+    def update_metadata(self, status, artifacts=None):
         base_url = f"https://www.googleapis.com/compute/v1/projects/{self.gce_project}/zones/{self.gce_zone}/"
         r = self.gce_http.get(f"{base_url}instances/{self.gce_instance}")
         r.raise_for_status()
         metadata = r.json()["metadata"]
+        new_metadata = {
+            **{
+                item["key"]: item["value"]
+                for item in metadata["items"]
+            },
+            "status": status,
+        }
+        if artifacts:
+            new_metadata["artifacts"] = artifacts
         body = {
             "fingerprint": metadata["fingerprint"],
             "items": [
                 dict(key=key, value=value)
-                for key, value in {
-                    **{
-                        item["key"]: item["value"]
-                        for item in metadata["items"]
-                    },
-                    "status": status,
-                    "artifacts": artifacts,
-                }.items()
+                for key, value in new_metadata.items()
             ],
         }
         r = self.gce_http.post(

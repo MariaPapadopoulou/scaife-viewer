@@ -101,7 +101,7 @@ class CloudJob:
 
     def read_external_artifact(self, url, buf):
         if url.startswith("gs://"):
-            m = re.match(r"gs://(?P<bucket>[^/]+)/(?P<obj>.+)/?$")
+            m = re.match(r"gs://(?P<bucket>[^/]+)/(?P<obj>.+)/?$", url)
             if not m:
                 raise RuntimeError(f"invalid GS URL format: {url}")
             bucket = m.group("bucket")

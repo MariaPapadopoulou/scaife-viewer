@@ -71,8 +71,8 @@ class CloudJob:
 
     def load_artifacts(self):
         try:
-            provided_artifacts = query_metadata("instance/attributes/artifacts")
-        except KeyError:
+            provided_artifacts = json.loads(query_metadata("instance/attributes/artifacts"))
+        except (KeyError, json.JSONDecodeError):
             provided_artifacts = {}
         artifacts = {}
         for key, artifact in provided_artifacts.items():
